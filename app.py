@@ -16,9 +16,8 @@ st.sidebar.markdown(DESCRIPTION)
 def split_coordinates(df: pd.DataFrame) -> pd.DataFrame:
     """splits the values from the tweet_coords column to two new columns called Latitude and Longitude"""
     coords_df = df['tweet_coord'].str.strip('[]').str.split(', ', expand=True).rename(columns={0:'lat', 1:'lon'})
-    st.write(coords_df)
-    coords_df.lat = coords_df.lat.astype('float128', copy=False)
-    coords_df.lon = coords_df.lon.astype('float128', copy=False)
+    coords_df.lat = coords_df.lat.astype('float')
+    coords_df.lon = coords_df.lon.astype('float')
     df = pd.concat([df, coords_df], axis=1, sort=False)
     return df
     
@@ -30,7 +29,6 @@ def load_data() -> pd.DataFrame:
     data = split_coordinates(data)
     return data
 data = load_data()
-st.write(data)
 
 st.sidebar.subheader("Show random tweet.")
 random_tweet = st.sidebar.radio("Sentiment", ('positive', 'neutral', 'negative'))
@@ -43,7 +41,7 @@ sentiment_count = data['airline_sentiment'].value_counts()
 sentiment_count = pd.DataFrame({'Sentiment': sentiment_count.index, 
                                'Tweets': sentiment_count.values})
 
-if st.sidebar.checkbox("Hide", True) == False:
+if st.sidebar.checkbox("Show plot", True):
     st.markdown("### Number of tweets by sentiment")
     if select_visual == 'Bars':
         fig = px.bar(sentiment_count, x='Sentiment', y='Tweets', color='Tweets', height=500)
@@ -51,10 +49,45 @@ if st.sidebar.checkbox("Hide", True) == False:
     else:
         fig = px.pie(sentiment_count, values='Tweets', names='Sentiment')
         st.plotly_chart(fig)
+#
 
-st.write(data.dtypes)
-st.map(data)
+@st.cache(persist=True)
+def remove_na_from_coords(df: pd.DataFrame) -> pd.DataFrame:
+    # getting only the rows where the coordinates are not null
+    df = df[df['tweet_coord'].notna()]
+    return df
+map_df = remove_na_from_coords(data)
+#
 
+st.sidebar.subheader("When and where are users tweeting from?")
+if st.sidebar.checkbox("Show map", False):
+    hour = st.sidebar.slider("Hour of day", 0, 23)
+    modified_data = data[data['tweet_created'].dt.hour == hour]
+    st.markdown("### Tweets locations based on time of day")
+    st.markdown("%i tweets between %i:00 and %i:00" % (len(modified_data), hour, hour+1))
+    st.map(modified_data)
+    if st.sidebar.checkbox("Show raw data", False):
+        st.write(modified_data)
+        
+#
+st.sidebar.subheader("Breakdown airline tweets by sentiment")
+airlines = ('US Airways', 'United', 'American', 'Southwest', 'Delta', 'Virgin America')
+choice = st.sidebar.multiselect('Pick airlines', airlines)
+
+if len(choice) > 0:
+    choice_data = data[data.airline.isin(choice)]
+    fig_choice = px.histogram(choice_data, 
+                              x='airline', 
+                              y='airline_sentiment', 
+                              histfunc='count', 
+                              color='airline_sentiment', 
+                              facet_col='airline_sentiment',
+                              labels={'airline_sentiment': 'tweets'},
+                              height=600,
+                              width=800)
+    st.plotly_chart(fig_choice)
+    
+#
 
 
 
