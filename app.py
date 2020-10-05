@@ -1,4 +1,3 @@
-# imports
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -6,7 +5,6 @@ import plotly.express as px
 from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 
-# app
 TITLE = "Sentiment analysis of tweets on US Airlines"
 st.title(TITLE)
 st.sidebar.title(TITLE)
@@ -105,6 +103,3 @@ if not st.sidebar.checkbox("Hide wordcloud", True, key='3'):
     wc_fig = plt.box(False)
     st.pyplot(wc_fig)
 #
-
-
-
