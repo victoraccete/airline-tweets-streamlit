@@ -91,15 +91,15 @@ st.sidebar.header("Sentiment word cloud")
 word_sentiment = st.sidebar.radio('Display wordcloud for which sentiment?', ('positive', 'neutral', 'negative'))
 
 if not st.sidebar.checkbox("Hide wordcloud", True, key='3'):
-    st.set_option('deprecation.showPyplotGlobalUse', False) # removing big warning
+    #st.set_option('deprecation.showPyplotGlobalUse', False) # removing big warning
     st.header('Word cloud for %s' % (word_sentiment))
     df = data[data.airline_sentiment == word_sentiment]
     words = ' '.join(df['text'])
     processed_words = ' '.join([word for word in words.split() if 'http' not in word and not word.startswith('@') and word != 'RT'])
     wordcloud = WordCloud(stopwords=STOPWORDS, background_color='white',height=640, width=800).generate(processed_words)
-    wc_fig = plt.imshow(wordcloud)
-    wc_fig = plt.xticks([])
-    wc_fig = plt.yticks([])
-    wc_fig = plt.box(False)
-    st.pyplot(wc_fig)
+    plt.imshow(wordcloud)
+    plt.xticks([])
+    plt.yticks([])
+    plt.box(False)
+    st.pyplot()
 #
