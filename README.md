@@ -3,5 +3,6 @@ Getting started with streamlit for building interactive dashboards. Dataset here
 
 Run with: ```streamlit run app.py```  
 
-Packages on requirements.txt
+Packages on requirements.txt  
+Python 3.7.7
 
