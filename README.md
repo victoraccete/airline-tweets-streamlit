@@ -4,11 +4,11 @@ Getting started with streamlit for building interactive dashboards. Dataset here
 Run with: ```streamlit run app.py```  
 
 **Packages:**  
-Streamlit  
+Streamlit (v0.67.1)  
 ```pip install streamlit```  
-Pandas  
+Pandas (v1.1.3)  
 ```conda install -c anaconda pandas```  
-Numpy  
+Numpy (v.1.19.1)  
 ```conda install -c anaconda numpy```  
 Plotly express  
 ```conda install -c plotly plotly_express```  
